@@ -1,12 +1,21 @@
 <?php
+/*
+Copyright 2017 Kevin Froman - GNU AFFERO GENERAL PUBLIC LICENSE
+*/
 session_start();
-
 if (isset($_SESSION['loggedIn'])){
-  if ($_SESSION['loggedIn'] == true){
-    header('location: dashboard.php');
+  if ($_SESSION['loggedIn'] == false){
+    header('location: index.php?v=1');
     die(0);
   }
 }
+else{
+  header('location: index.php');
+  die(0);
+}
+include('php/csrf.php');
+include('php/settings.php');
+include('php/userInfo.php');
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -19,12 +28,11 @@ if (isset($_SESSION['loggedIn'])){
 </head>
 <body>
   <div class='center'>
-    <h1 class='title'>TinyGen Market</h1>
+    <h1 class='title'>TinyGen Dashboard</h1>
   </div>
   <div class='center'>
-    <a href='login.php'>Login</a>
-    <br><br>
-    <a href='signup.php'>Signup</a>
+    <?php echo $_SESSION['user'];?>
+    <br><br><a href='logout.php?CSRF=<?php echo $CSRF;?>'>Logout</a>
   </div>
 </body>
 </html>

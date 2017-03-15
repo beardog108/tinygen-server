@@ -3,6 +3,14 @@
 Copyright 2017 Kevin Froman - GNU AFFERO GENERAL PUBLIC LICENSE
 */
 session_start();
+
+if (isset($_SESSION['loggedIn'])){
+  if ($_SESSION['loggedIn'] == true){
+    header('location: dashboard.php');
+    die(0);
+  }
+}
+
 include('php/csrf.php');
 include('php/settings.php');
 include('php/userInfo.php');
@@ -26,6 +34,10 @@ function signup(){
   }
   $user = rtrim(ltrim($_POST['user']));
 
+  if (strpos($user, '<') !== false || strpos($user, '>') !== false){
+      signupError('Your username cannot contain < or >');
+  }
+
   if (strlen($pass) < 8){
     signupError('Your password must be over 8 characters in length');
   }
@@ -45,11 +57,10 @@ function signup(){
   $pass = password_hash($pass, PASSWORD_DEFAULT);
   if ($userInfo->addUser($user, $pass)){
     $userInfo->loginUser($user, $pass, true);
-    header('location: profile.php');
+    header('location: dashboard.php');
     die(0);
   }
 }
-
 
 if (isset($_GET['signup'])){
   if ($_GET['signup'] == 'true')
@@ -61,6 +72,7 @@ if (isset($_GET['signup'])){
 <head>
   <meta charset='utf-8'>
   <!--Copyright 2017 Kevin Froman - GNU AFFERO GENERAL PUBLIC LICENSE -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>TinyGen</title>
   <link rel='stylesheet' href='theme.css'>
 </head>
@@ -83,6 +95,7 @@ if (isset($_GET['signup'])){
       <label class='formArea'>Password: <input type='password' name='password' required></label>
       <label class='formArea'>Confirm Password: <input type='password' name='confirmPass' required></label>
       <label class='formArea'><input type='submit' value='Signup' id='signupButton'></label>
+      <br><br><a href='login.php'>Already have an account?</a>
   </div>
 </body>
 </html>

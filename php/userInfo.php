@@ -55,7 +55,23 @@ EOF;
       $_SESSION['user'] = $user;
       $_SESSION['loggedIn'] = true;
     }
-    return;
+    else{
+      $db = new MyDB();
+      $user = $db->escapeString($user);
+      $sql =<<<EOF
+            SELECT * from Users where name = '$user' and password = '$password';
+EOF;
+      $ret = $db->query($sql);
+      while($row = $ret->fetchArray(SQLITE3_ASSOC)){
+        if ($row['name'] == $user){
+          $user = true;
+        }
+        else{
+          $user = false;
+        }
+      }
+    }
+    return $user;
   }
 }
 ?>
