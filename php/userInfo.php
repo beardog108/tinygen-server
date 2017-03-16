@@ -2,16 +2,19 @@
 /*
 Copyright 2017 Kevin Froman - GNU AFFERO GENERAL PUBLIC LICENSE
 */
-class MyDB extends SQLite3
-{
-   function __construct()
-   {
+class MyDB extends SQLite3 {
+   function __construct() {
      include('php/settings.php');
       $this->open($userDB);
    }
 }
-class userInfo
-{
+class PluginsDB extends SQLite3 {
+   function __construct() {
+     include('php/settings.php');
+      $this->open($pluginsDB);
+   }
+}
+class userInfo {
   public function userExists($user){
     // Check if a user exists or not
     $rowCount = 0;
@@ -74,6 +77,24 @@ EOF;
       }
     }
     return $login;
+  }
+  public function listUserPlugins($user){
+    $rowCount = 0;
+    $db = new PluginsDB();
+    $retData = '';
+    $user = $db->escapeString($user);
+    $sql =<<<EOF
+       SELECT * from Plugins where owner = '$user';
+EOF;
+    $ret = $db->query($sql);
+    while($row = $ret->fetchArray(SQLITE3_ASSOC) ){
+      $rowCount = $rowCount + 1;
+      $retData = $retData . $row['name'] . '<br>' . $row['description'] . '<br>';
+    }
+    if ($rowCount == 0){
+      $retData = 'Nothing here!';
+    }
+    return $retData;
   }
 }
 ?>
