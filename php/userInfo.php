@@ -51,27 +51,29 @@ EOF;
     return $ret;
   }
   public function loginUser($user, $password, $force){
+    $login = false;
     if ($force){
       $_SESSION['user'] = $user;
       $_SESSION['loggedIn'] = true;
+      $login = true;
     }
     else{
       $db = new MyDB();
       $user = $db->escapeString($user);
       $sql =<<<EOF
-            SELECT * from Users where name = '$user' and password = '$password';
+            SELECT * from Users where name = '$user';
 EOF;
       $ret = $db->query($sql);
       while($row = $ret->fetchArray(SQLITE3_ASSOC)){
-        if ($row['name'] == $user){
-          $user = true;
+        if (password_verify($password, $row['password'])){
+          $login = true;
         }
         else{
-          $user = false;
+          die('false');
         }
       }
     }
-    return $user;
+    return $login;
   }
 }
 ?>

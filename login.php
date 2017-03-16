@@ -21,9 +21,18 @@ function loginError($reason){
 include('php/csrf.php');
 include('php/settings.php');
 include('php/userInfo.php');
+
 $userInfo = new userInfo();
 
 if (isset($_GET['login'])){
+  if (! isset($_POST['csrf'])){
+    loginError('Invalid request token');
+  }
+  else{
+    if ($_POST['csrf'] != $_SESSION['CSRF']){
+      loginError('Invalid request token');
+    }
+  }
   if ($_GET['login'] == 'true'){
     if (! isset($_POST['user']) || ! isset($_POST['password'])){
       loginError('Invalid login request');
@@ -35,12 +44,16 @@ if (isset($_GET['login'])){
     if (! $userInfo->userExists($user)){
       loginError('A user by that name does not exist.');
     }
-    $password = password_hash($password, PASSWORD_DEFAULT);
     if($userInfo->loginUser($user, $password, false)){
       $_SESSION['user'] = $user;
       $_SESSION['loggedIn'] = true;
       header('location: dashboard.php');
       die(0);
+    }
+    else{
+      $_SESSION['loggedIn'] = false;
+      $_SESSION['user'] = '';
+      loginError('Invalid login information');
     }
   }
 }
@@ -59,6 +72,14 @@ if (isset($_GET['login'])){
     <h1 class='title'>TinyGen Login</h1>
   </div>
   <div class='center'>
+    <?php
+    if (isset($_SESSION['loginError'])){
+      if ($_SESSION['loginError'] != ''){
+        echo '<h2 style="color: red;">' . $_SESSION['loginError'] . '</h2>';
+        $_SESSION['loginError'] = '';
+      }
+    }
+    ?>
     <form method='post' action='login.php?login=true'>
       <input type='hidden' name='csrf' value="<?php echo $CSRF;?>">
       <label class='formArea'>Username: <input type='text' name='user' required></label>
