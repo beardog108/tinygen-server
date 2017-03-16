@@ -72,7 +72,7 @@ EOF;
           $login = true;
         }
         else{
-          die('false');
+          $login = false;
         }
       }
     }
@@ -92,7 +92,7 @@ EOF;
       $retData = $retData . $row['name'] . '<br>' . $row['description'] . '<br>';
     }
     if ($rowCount == 0){
-      $retData = 'Nothing here!';
+      $retData = '<br><br><div class=\'center\'>Nothing here!</div><br><br>';
     }
     return $retData;
   }

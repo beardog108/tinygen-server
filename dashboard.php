@@ -3,16 +3,8 @@
 Copyright 2017 Kevin Froman - GNU AFFERO GENERAL PUBLIC LICENSE
 */
 session_start();
-if (isset($_SESSION['loggedIn'])){
-  if ($_SESSION['loggedIn'] == false){
-    header('location: index.php?v=1');
-    die(0);
-  }
-}
-else{
-  header('location: index.php');
-  die(0);
-}
+include('php/checklogin.php');
+checkLogin();
 include('php/csrf.php');
 include('php/settings.php');
 include('php/userInfo.php');
@@ -36,11 +28,14 @@ $user = $_SESSION['user'];
   <div class='center'>
     <p>Logged in as: <?php echo $user;?> <a href='logout.php?CSRF=<?php echo $CSRF;?>'>Logout</a></p>
   </div>
-    <div class='contentArea'>
+  <div class='contentArea'>
       <h2 class='center'>My Plugins</h2>
     <?php
     echo $userInfo->listUserPlugins($user);
     ?>
+    <div class='center'>
+      <a href='create.php?type=plugin'>Add Plugin</a>
+    </div>
   </div>
 </body>
 </html>

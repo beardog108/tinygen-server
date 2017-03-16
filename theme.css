@@ -12,7 +12,7 @@ h1, h2{
   display: block;
 }
 
-#signupButton {
+#signupButton, .mainButton {
   background: #3498db;
   background-image: linear-gradient(to bottom, #3498db, #2980b9);
   border-radius: 28px;
@@ -24,7 +24,7 @@ h1, h2{
   text-decoration: none;
 }
 
-#signupButton:hover {
+#signupButton:hover, .mainButton {
   background: #3cb0fd;
   background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
   text-decoration: none;
@@ -35,9 +35,16 @@ a, a:visited{
 }
 
 .contentArea{
-  margin-right: 5%;
-  margin-left: 5%;
+  margin-right: 10%;
+  margin-left: 10%;
   padding: 1em;
   border: 1px solid black;
   border-radius: 5px;
+}
+
+@media only screen and (max-device-width : 640px) {
+  .contentArea{
+    margin-right: 3%;
+    margin-left: 3%;
+  }
 }
