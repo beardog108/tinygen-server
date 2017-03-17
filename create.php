@@ -9,7 +9,7 @@ function createError($reason, $createType){
   die(0);
 }
 
-function checkIfPost(){
+function checkIfPost($CSRF){
   // Check if it was a post (creation upload) request, if so validate it
   $retVal = false;
   if (isset($_POST['createType'])){
@@ -18,19 +18,19 @@ function checkIfPost(){
       header('location: dashboard.php');
       die(0);
     }
-  }
   if ($CSRF != $_POST['csrf']){
     createError('Invalid request token', $createType);
   }
   if (isset($_POST['package'])){
     // Proccess it
   }
+  }
 }
 
 session_start();
 include('php/checklogin.php');
-checkLogin();
 include('php/csrf.php');
+checkLogin();
 include('php/settings.php');
 include('php/userInfo.php');
 
@@ -38,7 +38,7 @@ $userInfo = new userInfo();
 $user = $_SESSION['user'];
 $createType = '';
 
-if (checkIfPost()){
+if (checkIfPost($CSRF)){
   //createItem()
 }
 
@@ -67,6 +67,7 @@ else{
   <!--Copyright 2017 Kevin Froman - GNU AFFERO GENERAL PUBLIC LICENSE -->
   <title>TinyGen</title>
   <link rel='stylesheet' href='theme.css'>
+  <script src='validate.js'></script>
 </head>
 <body>
   <div class='center'>
@@ -77,7 +78,7 @@ else{
     <p>Logged in as: <?php echo $user;?> <a href='logout.php?CSRF=<?php echo $CSRF;?>'>Logout</a></p>
   </div>
   <div class='contentArea'>
-      <h2 class='center'>Create <?php echo ucwords($createType);?></h2>
+      <h2 class='center'>Add <?php echo ucwords($createType);?></h2>
       <?php
       if (isset($_SESSION['createError'])){
         if ($_SESSION['createError'] != ''){
@@ -90,7 +91,7 @@ else{
         <form method='post' action='create.php' onsubmit='return validateUpload("<?php echo $createType;?>");'>
           <input name='csrf' value='<?php echo $CSRF;?>' type='hidden'>
           <input name='createType' value='<?php echo $createType;?>' type='hidden'>
-          <label class='formArea'><?php echo ucwords($createType);?> Archive (.zip): <input type='file' name='package' accept='.zip'></label>
+          <label class='formArea'><?php echo ucwords($createType);?> Archive (.zip): <input required id='package' type='file' name='package' accept='.zip'></label>
           <label class='formArea'><input class='mainButton' type='submit' value='Create <?php echo ucwords($createType);?>'></label>
         </form>
       </div>
